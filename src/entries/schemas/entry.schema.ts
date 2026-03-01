@@ -10,14 +10,14 @@ export enum FlightType {
 
 @Schema({ timestamps: true })
 export class Entry {
-  @Prop({ type: String, require: true, enum: FlightType, index: true })
+  @Prop({ type: String, required: true, enum: FlightType })
   type: FlightType;
 
-  @Prop({ type: String, require: true, enum: FlightType, index: true })
+  @Prop({ type: String, required: true })
   date: string;
 
-  @Prop({ type: String, require: true, min: 1, max: 24 * 60 })
-  minutes: string;
+  @Prop({ type: Number, required: true, min: 1, max: 24 * 60 })
+  minutes: number;
 
   @Prop({ type: String })
   note?: string;
