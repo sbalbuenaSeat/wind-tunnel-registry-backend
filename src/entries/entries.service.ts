@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Entry, EntryDocument } from './schemas/entry.schema';
 import { Model } from 'mongoose';
 import { CreateEntryDto } from './dto/create-entry.dto';
+import { UpdateEntryDto } from './dto/update-entry.dto';
 
 @Injectable()
 export class EntriesService {
@@ -20,5 +21,24 @@ export class EntriesService {
       .find(filter)
       .sort({ date: -1, createdAt: -1 })
       .exec();
+  }
+
+  async update(id: string, dto: UpdateEntryDto): Promise<Entry> {
+    const updatedEntry = await this.entryModel
+      .findByIdAndUpdate(
+        id,
+        { $set: dto },
+        { returnDocument: 'after', runValidators: true },
+      )
+      .exec();
+
+    if (!updatedEntry) throw new NotFoundException('Entry not found');
+    return updatedEntry;
+  }
+
+  async remove(id: string) {
+    const entry = await this.entryModel.findByIdAndDelete(id);
+    if (!entry) throw new NotFoundException('Entry not found');
+    return { ok: true };
   }
 }
