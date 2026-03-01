@@ -18,9 +18,7 @@ import { ReportsModule } from './reports/reports.module';
         uri: config.get<string>('MONGO_URI'),
       }),
     }),
-
     EntriesModule,
-
     ReportsModule,
   ],
   controllers: [AppController],
