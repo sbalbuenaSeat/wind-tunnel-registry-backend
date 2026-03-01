@@ -1,6 +1,6 @@
 # Description
 
-Fixes [JIRA TICKET]
+Fixes feature
 
 Please include a short summary of the change and which issue is fixed. Please also include relevant motivation and context. List any dependencies that are required for this change.
 
