@@ -11,26 +11,32 @@ export class EntriesService {
     @InjectModel(Entry.name) private readonly entryModel: Model<EntryDocument>,
   ) {}
 
-  async create(dto: CreateEntryDto): Promise<Entry> {
+  async create(dto: CreateEntryDto): Promise<EntryDocument> {
     return this.entryModel.create(dto);
   }
 
-  async importEntries(entries: CreateEntryDto[]): Promise<Entry[]> {
-    return this.entryModel.insertMany(entries);
+  async importEntries(entries: CreateEntryDto[]): Promise<EntryDocument[]> {
+    return (await this.entryModel.insertMany(entries)) as unknown as Promise<
+      EntryDocument[]
+    >;
   }
 
-  async findAll(date?: string): Promise<Entry[]> {
-    const filter = date ? { date } : {};
+  async findAll(userId: string, date?: string): Promise<EntryDocument[]> {
+    const filter = date ? { date, user: userId } : { user: userId };
     return this.entryModel
       .find(filter)
       .sort({ date: -1, createdAt: -1 })
       .exec();
   }
 
-  async update(id: string, dto: UpdateEntryDto): Promise<Entry> {
+  async update(
+    id: string,
+    userId: string,
+    dto: UpdateEntryDto,
+  ): Promise<EntryDocument> {
     const updatedEntry = await this.entryModel
-      .findByIdAndUpdate(
-        id,
+      .findOneAndUpdate(
+        { _id: id, user: userId },
         { $set: dto },
         { returnDocument: 'after', runValidators: true },
       )
@@ -40,8 +46,11 @@ export class EntriesService {
     return updatedEntry;
   }
 
-  async remove(id: string) {
-    const entry = await this.entryModel.findByIdAndDelete(id);
+  async remove(id: string, userId: string) {
+    const entry = await this.entryModel.findOneAndDelete({
+      _id: id,
+      user: userId,
+    });
     if (!entry) throw new NotFoundException('Entry not found');
     return { ok: true };
   }
