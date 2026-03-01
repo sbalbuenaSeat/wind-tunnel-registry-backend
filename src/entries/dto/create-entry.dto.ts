@@ -1,5 +1,4 @@
 import {
-  IsDateString,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -7,6 +6,8 @@ import {
   IsString,
   Max,
   Min,
+  IsDateString,
+  IsMongoId,
 } from 'class-validator';
 import { FlightType } from '../schemas/entry.schema';
 
@@ -27,4 +28,8 @@ export class CreateEntryDto {
   @IsString()
   @IsOptional()
   note?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  user?: string;
 }
