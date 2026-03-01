@@ -11,6 +11,7 @@ import {
 import { EntriesService } from './entries.service';
 import { CreateEntryDto } from './dto/create-entry.dto';
 import { UpdateEntryDto } from './dto/update-entry.dto';
+import { ImportEntriesDto } from './dto/import-entries.dto';
 
 @Controller('entries')
 export class EntriesController {
@@ -19,6 +20,11 @@ export class EntriesController {
   @Post()
   create(@Body() dto: CreateEntryDto) {
     return this.service.create(dto);
+  }
+
+  @Post('import')
+  import(@Body() dto: ImportEntriesDto) {
+    return this.service.importEntries(dto.entries);
   }
 
   @Get()

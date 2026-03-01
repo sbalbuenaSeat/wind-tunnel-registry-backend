@@ -15,6 +15,10 @@ export class EntriesService {
     return this.entryModel.create(dto);
   }
 
+  async importEntries(entries: CreateEntryDto[]): Promise<Entry[]> {
+    return this.entryModel.insertMany(entries);
+  }
+
   async findAll(date?: string): Promise<Entry[]> {
     const filter = date ? { date } : {};
     return this.entryModel
