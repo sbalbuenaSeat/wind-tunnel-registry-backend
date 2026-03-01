@@ -10,7 +10,7 @@ export class ReportsController {
     return this.reportsService.totalFlightTime(date);
   }
 
-  @Get('by-type')
+  @Get('total-by-type')
   getReportByType(@Query('date') date?: string) {
     return this.reportsService.totalFlightTimeByType(date);
   }
