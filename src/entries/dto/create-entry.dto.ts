@@ -1,4 +1,5 @@
 import {
+  IsDateString,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -14,7 +15,7 @@ export class CreateEntryDto {
   @IsNotEmpty()
   type: FlightType;
 
-  @IsString()
+  @IsDateString()
   @IsNotEmpty()
   date: string;
 
