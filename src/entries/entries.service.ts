@@ -11,14 +11,18 @@ export class EntriesService {
     @InjectModel(Entry.name) private readonly entryModel: Model<EntryDocument>,
   ) {}
 
-  async create(dto: CreateEntryDto): Promise<EntryDocument> {
-    return this.entryModel.create(dto);
+  async create(userId: string, dto: CreateEntryDto): Promise<EntryDocument> {
+    return this.entryModel.create({ ...dto, user: userId });
   }
 
-  async importEntries(entries: CreateEntryDto[]): Promise<EntryDocument[]> {
-    return (await this.entryModel.insertMany(entries)) as unknown as Promise<
-      EntryDocument[]
-    >;
+  async importEntries(
+    userId: string,
+    entries: CreateEntryDto[],
+  ): Promise<EntryDocument[]> {
+    const entriesWithUser = entries.map((e) => ({ ...e, user: userId }));
+    return (await this.entryModel.insertMany(
+      entriesWithUser,
+    )) as unknown as Promise<EntryDocument[]>;
   }
 
   async findAll(userId: string, date?: string): Promise<EntryDocument[]> {

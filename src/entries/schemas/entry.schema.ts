@@ -22,7 +22,12 @@ export class Entry {
   @Prop({ type: String })
   note?: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    select: false,
+  })
   user: Types.ObjectId;
 }
 
