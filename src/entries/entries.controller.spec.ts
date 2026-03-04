@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntriesController } from './entries.controller';
 import { EntriesService } from './entries.service';
 import { FlightType } from './schemas/entry.schema';
+import { NotFoundException } from '@nestjs/common';
 
 describe('EntriesController', () => {
   let entriesController: EntriesController;
@@ -42,42 +43,67 @@ describe('EntriesController', () => {
   });
 
   describe('create', () => {
-    it('should create a new entry for userId', async () => {
-      const createEntryDto = {
-        type: FlightType.INDIVIDUAL,
-        date: '2026-03-02',
-        minutes: 15,
-        note: 'new note',
-      };
+    describe('success', () => {
+      it('should create a new entry for userId', async () => {
+        const createEntryDto = {
+          type: FlightType.INDIVIDUAL,
+          date: '2026-03-02',
+          minutes: 15,
+          note: 'new note',
+        };
 
-      const expectedResult = {
-        _id: 'entryId',
-        ...createEntryDto,
-      };
+        const expectedResult = {
+          _id: 'entryId',
+          ...createEntryDto,
+        };
 
-      mockEntriesService.create.mockResolvedValue(expectedResult);
+        mockEntriesService.create.mockResolvedValue(expectedResult);
 
-      const result = await entriesController.create(
-        createEntryDto,
-        mockRequest,
-      );
+        const result = await entriesController.create(
+          createEntryDto,
+          mockRequest,
+        );
 
-      expect(mockEntriesService.create).toHaveBeenCalledWith(
-        'id',
-        createEntryDto,
-      );
-      expect(result).toEqual(expectedResult);
+        expect(mockEntriesService.create).toHaveBeenCalledWith(
+          'id',
+          createEntryDto,
+        );
+        expect(result).toEqual(expectedResult);
+      });
+    });
+    describe('not success', () => {
+      it('should throw an error when service fails', async () => {
+        const createEntryDto = {
+          type: FlightType.INDIVIDUAL,
+          date: '2026-03-02',
+          minutes: 15,
+          note: 'new note',
+        };
+
+        mockEntriesService.create.mockRejectedValue(
+          new NotFoundException('Entry not found'),
+        );
+
+        await expect(
+          entriesController.create(createEntryDto, mockRequest),
+        ).rejects.toThrow('Entry not found');
+
+        expect(mockEntriesService.create).toHaveBeenCalledWith(
+          'id',
+          createEntryDto,
+        );
+      });
     });
   });
   describe('update', () => {
-    it('should update a entry for userId', async () => {
-      const updateEntryDto = {
-        type: FlightType.INDIVIDUAL,
-        date: '2026-03-02',
-        minutes: 15,
-        note: 'note update',
-      };
+    const updateEntryDto = {
+      type: FlightType.INDIVIDUAL,
+      date: '2026-03-02',
+      minutes: 15,
+      note: 'note update',
+    };
 
+    it('should update a entry for userId', async () => {
       const expectedResult = {
         _id: 'entryId',
         ...updateEntryDto,
@@ -98,6 +124,22 @@ describe('EntriesController', () => {
       );
       expect(result).toEqual(expectedResult);
     });
+
+    it('should throw NotFoundException when entry does not exist', async () => {
+      mockEntriesService.update.mockRejectedValue(
+        new NotFoundException('Entry not found'),
+      );
+
+      await expect(
+        entriesController.update('nonExistentId', updateEntryDto, mockRequest),
+      ).rejects.toThrow(NotFoundException);
+
+      expect(mockEntriesService.update).toHaveBeenCalledWith(
+        'nonExistentId',
+        'id',
+        updateEntryDto,
+      );
+    });
   });
   describe('remove', () => {
     it('should remove a entry for userId', async () => {
@@ -108,6 +150,21 @@ describe('EntriesController', () => {
 
       expect(mockEntriesService.remove).toHaveBeenCalledWith('entryId', 'id');
       expect(result).toEqual(mockResult);
+    });
+
+    it('should throw NotFoundException when trying to remove a non-existent entry', async () => {
+      mockEntriesService.remove.mockRejectedValue(
+        new NotFoundException('Entry not found'),
+      );
+
+      await expect(
+        entriesController.remove('nonExistentId', mockRequest),
+      ).rejects.toThrow(NotFoundException);
+
+      expect(mockEntriesService.remove).toHaveBeenCalledWith(
+        'nonExistentId',
+        'id',
+      );
     });
   });
   describe('list', () => {
