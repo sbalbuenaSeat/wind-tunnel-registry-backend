@@ -1,8 +1,9 @@
-import { Controller, Get, Req, UseGuards, Res } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
-import { UserDocument } from '../users/schemas/user.schema';
 import { AuthService } from './auth.service';
+import { UserDocument } from '../users/schemas/user.schema';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -10,30 +11,37 @@ export class AuthController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  googleAuth() {
-    // Initiates the Google OAuth flow
-  }
+  googleAuth() {}
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
     const user = req.user as UserDocument;
+
     const token = this.authService.generateToken(user);
 
-    // In a real app, you would redirect to the frontend with the token
-    // For now, returning it as JSON
-    return res.json({
-      message: 'Login successful',
-      user,
-      accessToken: token,
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: false, // true in production (https)
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000,
     });
+
+    return res.redirect('http://localhost:3000');
   }
 
   @Get('logout')
-  logout(@Req() req: Request, @Res() res: Response) {
-    req.logout((err: Error | null) => {
-      if (err) return res.status(500).json({ message: 'Logout failed' });
-      return res.json({ message: 'Logout successful' });
+  logout(@Res() res: Response) {
+    res.clearCookie('access_token');
+
+    return res.json({
+      message: 'Logout successful',
     });
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  me(@Req() req: Request) {
+    return req.user;
   }
 }
