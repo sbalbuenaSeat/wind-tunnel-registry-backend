@@ -26,15 +26,13 @@ export class EntriesController {
   @Post()
   create(@Body() dto: CreateEntryDto, @Req() req: Request) {
     const user = req.user as UserDocument;
-    dto.user = user._id.toString();
-    return this.service.create(dto);
+    return this.service.create(user._id.toString(), dto);
   }
 
   @Post('import')
   import(@Body() dto: ImportEntriesDto, @Req() req: Request) {
     const user = req.user as UserDocument;
-    dto.entries.forEach((entry) => (entry.user = user._id.toString()));
-    return this.service.importEntries(dto.entries);
+    return this.service.importEntries(user._id.toString(), dto.entries);
   }
 
   @Get()
