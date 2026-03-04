@@ -3,26 +3,31 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
-import { getModelToken, MongooseModule } from '@nestjs/mongoose';
+import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
 import { Entry } from '../src/entries/schemas/entry.schema';
-import { User } from '../src/users/schemas/user.schema'; // Importa también User
+import { User } from '../src/users/schemas/user.schema';
 import { vi } from 'vitest';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
   const mockModel = {
-    find: vi.fn(),
-    create: vi.fn(),
+    find: vi.fn().mockReturnThis(),
     exec: vi.fn(),
+    create: vi.fn(),
   };
 
-  beforeEach(async () => {
+  const mockConnection = {
+    close: vi.fn(),
+    model: vi.fn(),
+  };
+
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideModule(MongooseModule)
-      .useModule(MongooseModule.forRoot('mongodb://mock/database'))
+      .overrideProvider(getConnectionToken())
+      .useValue(mockConnection)
       .overrideProvider(getModelToken(Entry.name))
       .useValue(mockModel)
       .overrideProvider(getModelToken(User.name))
@@ -37,8 +42,8 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
+  it('/ (GET)', async () => {
+    await request(app.getHttpServer())
       .get('/')
       .expect(200)
       .expect('Hello World!');
