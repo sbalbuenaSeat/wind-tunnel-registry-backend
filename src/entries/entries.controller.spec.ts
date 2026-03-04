@@ -1,8 +1,8 @@
 import { expect, vi } from 'vitest';
+import { Request } from 'express';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntriesController } from './entries.controller';
 import { EntriesService } from './entries.service';
-import { Request } from 'express';
 import { FlightType } from './schemas/entry.schema';
 
 describe('EntriesController', () => {
