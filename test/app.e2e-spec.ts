@@ -3,14 +3,15 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
-import { getModelToken } from '@nestjs/mongoose';
+import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Entry } from '../src/entries/schemas/entry.schema';
+import { User } from '../src/users/schemas/user.schema'; // Importa también User
 import { vi } from 'vitest';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
-  const mockEntryModel = {
+  const mockModel = {
     find: vi.fn(),
     create: vi.fn(),
     exec: vi.fn(),
@@ -20,8 +21,12 @@ describe('AppController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
+      .overrideModule(MongooseModule)
+      .useModule(MongooseModule.forRoot('mongodb://mock/database'))
       .overrideProvider(getModelToken(Entry.name))
-      .useValue(mockEntryModel)
+      .useValue(mockModel)
+      .overrideProvider(getModelToken(User.name))
+      .useValue(mockModel)
       .compile();
 
     app = moduleFixture.createNestApplication();
