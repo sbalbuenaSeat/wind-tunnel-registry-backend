@@ -28,7 +28,7 @@ export class EntriesService {
     return await this.entryModel.insertMany(entriesWithUser);
   }
 
-  async findAll(userId: string, date?: string) {
+  async findAll(userId: string, date?: string): Promise<EntryResponseDto[]> {
     const filter = date ? { date, user: userId } : { user: userId };
     const entries = await this.entryModel
       .find(filter)
