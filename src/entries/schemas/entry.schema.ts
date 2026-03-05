@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
+import { HydratedDocument, Types, Schema as MongooseSchema } from 'mongoose';
 
 export type EntryDocument = HydratedDocument<Entry>;
 
@@ -10,6 +10,14 @@ export enum FlightType {
 
 @Schema({ timestamps: true })
 export class Entry {
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    select: false,
+  })
+  user: Types.ObjectId;
+
   @Prop({ type: String, required: true, enum: FlightType })
   type: FlightType;
 
@@ -21,14 +29,6 @@ export class Entry {
 
   @Prop({ type: String })
   note?: string;
-
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-    select: false,
-  })
-  user: Types.ObjectId;
 }
 
 export const EntrySchema = SchemaFactory.createForClass(Entry);
