@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Entry, EntryDocument } from '../entries/schemas/entry.schema';
-import {
-  FlightTimeByTypeDto,
-  TotalFlightTimeByTypeDto,
-} from './dto/total-flight-time-by-type.dto';
+import { TotalFlightTimeByTypeDto } from './dto/total-flight-time-by-type.dto';
 import { TotalFlightTimeDto } from './dto/total-flight-time.dto';
 
 @Injectable()
@@ -20,22 +17,18 @@ export class ReportsService {
   ): Promise<TotalFlightTimeDto> {
     const match: Record<string, unknown> = { user: new Types.ObjectId(userId) };
     if (date) match.date = date;
-    console.log(
-      'USERID',
-      userId,
-      'as ObjectId',
-      new Types.ObjectId(userId).toString(),
-    );
-    const totalMinutesResult =
-      await this.entryModel.aggregate<TotalFlightTimeDto>([
-        { $match: match },
-        {
-          $group: {
-            _id: null,
-            totalMinutes: { $sum: '$minutes' },
-          },
+
+    const totalMinutesResult = await this.entryModel.aggregate<{
+      totalMinutes: number;
+    }>([
+      { $match: match },
+      {
+        $group: {
+          _id: null,
+          totalMinutes: { $sum: '$minutes' },
         },
-      ]);
+      },
+    ]);
 
     return { totalMinutes: totalMinutesResult[0]?.totalMinutes ?? 0 };
   }
@@ -47,18 +40,20 @@ export class ReportsService {
     const match: Record<string, unknown> = { user: new Types.ObjectId(userId) };
     if (date) match.date = date;
 
-    const minutesByTypeResult =
-      await this.entryModel.aggregate<FlightTimeByTypeDto>([
-        { $match: match },
-        {
-          $group: {
-            _id: '$type',
-            minutes: { $sum: '$minutes' },
-          },
+    const minutesByTypeResult = await this.entryModel.aggregate<{
+      type: string;
+      minutes: number;
+    }>([
+      { $match: match },
+      {
+        $group: {
+          _id: '$type',
+          minutes: { $sum: '$minutes' },
         },
-        { $project: { _id: 0, type: '$_id', minutes: 1 } },
-        { $sort: { minutes: -1 } },
-      ]);
+      },
+      { $project: { _id: 0, type: '$_id', minutes: 1 } },
+      { $sort: { minutes: -1 } },
+    ]);
 
     const totalMinutes = minutesByTypeResult.reduce(
       (acc, x) => acc + x.minutes,
