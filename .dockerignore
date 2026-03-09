@@ -1,0 +1,18 @@
+# Node modules
+node_modules
+dist
+.env
+.env.production
+.git
+.github
+.idea
+.vscode
+.prettierrc
+eslint.config.mjs
+README.md
+coverage
+test
+vitest.config.ts
+nest-cli.json
+tsconfig.build.json
+pnpm-lock.yaml
