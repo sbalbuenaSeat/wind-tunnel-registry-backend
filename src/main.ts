@@ -10,7 +10,11 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'https://substantial-rosalynd-blue-code-1a304522.koyeb.app',
+    ],
     credentials: true,
   });
 
