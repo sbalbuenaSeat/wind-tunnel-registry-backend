@@ -11,6 +11,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -43,12 +45,12 @@ export class AuthController {
 
     res.cookie('access_token', token, {
       httpOnly: true,
-      secure: false, // true in production (https)
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    return res.redirect('http://localhost:3000');
+    return res.redirect('/docs');
   }
 
   @Get('logout')
