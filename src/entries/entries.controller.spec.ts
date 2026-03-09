@@ -5,6 +5,7 @@ import { EntriesController } from './entries.controller';
 import { EntriesService } from './entries.service';
 import { FlightType } from './schemas/entry.schema';
 import { NotFoundException } from '@nestjs/common';
+import { FindEntriesDto } from './dto/findEntries.dto';
 
 describe('EntriesController', () => {
   let entriesController: EntriesController;
@@ -170,6 +171,7 @@ describe('EntriesController', () => {
   describe('list', () => {
     it('should list only entries for a specific date when date is provided', async () => {
       const dateToFind = '2026-03-03';
+      const query = { date: dateToFind } as FindEntriesDto;
       const allEntries = [
         {
           _id: '1',
@@ -194,21 +196,60 @@ describe('EntriesController', () => {
       const filteredEntries = allEntries.filter((e) => e.date === dateToFind);
       mockEntriesService.findAll.mockResolvedValue(filteredEntries);
 
-      const result = await entriesController.list(dateToFind, mockRequest);
+      const result = await entriesController.list(query, mockRequest);
 
-      expect(mockEntriesService.findAll).toHaveBeenCalledWith('id', dateToFind);
+      expect(mockEntriesService.findAll).toHaveBeenCalledWith(
+        'id',
+        dateToFind,
+        undefined,
+      );
 
       expect(result).toHaveLength(2);
       expect(result).toEqual(filteredEntries);
     });
-    it('should list all entries for userId when no date is provided', async () => {
+    it('should list only entries for a specific type when type is provided', async () => {
+      const typeToFind = FlightType.SHARED;
+      const findEntriesDto = { type: typeToFind };
+      const allEntries = [
+        {
+          _id: '1',
+          type: FlightType.INDIVIDUAL,
+          date: '2026-03-02',
+          minutes: 15,
+        },
+        {
+          _id: '2',
+          type: FlightType.SHARED,
+          date: '2026-03-03',
+          minutes: 30,
+        },
+      ];
+
+      const filteredEntries = allEntries.filter((e) => e.type === typeToFind);
+      mockEntriesService.findAll.mockResolvedValue(filteredEntries);
+
+      const result = await entriesController.list(findEntriesDto, mockRequest);
+
+      expect(mockEntriesService.findAll).toHaveBeenCalledWith(
+        'id',
+        undefined,
+        typeToFind,
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result).toEqual(filteredEntries);
+    });
+    it('should list all entries for userId when no query is provided', async () => {
       const allEntries = [{ _id: '1' }, { _id: '2' }, { _id: '3' }];
       mockEntriesService.findAll.mockResolvedValue(allEntries);
 
-      const result = await entriesController.list(undefined, mockRequest);
+      const result = await entriesController.list({}, mockRequest);
 
-      expect(mockEntriesService.findAll).toHaveBeenCalledWith('id', undefined);
-      expect(result).toHaveLength(3);
+      expect(mockEntriesService.findAll).toHaveBeenCalledWith(
+        'id',
+        undefined,
+        undefined,
+      );
       expect(result).toEqual(allEntries);
     });
   });

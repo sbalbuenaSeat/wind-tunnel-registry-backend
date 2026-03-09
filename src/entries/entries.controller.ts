@@ -7,8 +7,8 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { EntriesService } from './entries.service';
 import { CreateEntryDto } from './dto/create-entry.dto';
@@ -24,6 +24,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { EntryResponseDto } from './dto/entry-response.dto';
+import { FindEntriesDto } from './dto/findEntries.dto';
 
 @ApiTags('Entries')
 @ApiCookieAuth('access_token')
@@ -51,9 +52,9 @@ export class EntriesController {
   @Get()
   @ApiOperation({ summary: 'List all flight time entries for the user' })
   @ApiResponse({ status: 200, type: [EntryResponseDto] })
-  list(@Query('date') date: string | undefined, @Req() req: Request) {
+  list(@Query() query: FindEntriesDto, @Req() req: Request) {
     const user = req.user as UserDocument;
-    return this.service.findAll(user._id.toString(), date);
+    return this.service.findAll(user._id.toString(), query.date, query.type);
   }
 
   @Patch(':id')

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Entry, EntryDocument } from './schemas/entry.schema';
+import { Entry, EntryDocument, FlightType } from './schemas/entry.schema';
 import { CreateEntryDto } from './dto/create-entry.dto';
 import { UpdateEntryDto } from './dto/update-entry.dto';
 import { mapEntryToResponse } from './mappers/entry.mapper';
@@ -13,23 +13,29 @@ export class EntriesService {
     @InjectModel(Entry.name) private readonly entryModel: Model<EntryDocument>,
   ) {}
 
-  async create(userId: string, dto: CreateEntryDto): Promise<EntryDocument> {
-    return this.entryModel.create({ ...dto, user: userId });
+  async create(userId: string, dto: CreateEntryDto): Promise<EntryResponseDto> {
+    const entry = await this.entryModel.create({ ...dto, user: userId });
+    return mapEntryToResponse(entry);
   }
 
-  async importEntries(
-    userId: string,
-    entries: CreateEntryDto[],
-  ): Promise<EntryResponseDto[]> {
-    const entriesWithUser = entries.map((entry) => ({
+  async importEntries(userId: string, entriesDto: CreateEntryDto[]) {
+    const entriesWithUser = entriesDto.map((entry) => ({
       ...entry,
       user: userId,
     }));
+
     return await this.entryModel.insertMany(entriesWithUser);
   }
-
-  async findAll(userId: string, date?: string): Promise<EntryResponseDto[]> {
-    const filter = date ? { date, user: userId } : { user: userId };
+  async findAll(
+    userId: string,
+    date?: string,
+    type?: FlightType,
+  ): Promise<EntryResponseDto[]> {
+    const filter = {
+      user: userId,
+      ...(date && { date }),
+      ...(type && { type }),
+    };
     const entries = await this.entryModel
       .find(filter)
       .sort({ date: -1, createdAt: -1 })

@@ -33,4 +33,4 @@ export class Entry {
 
 export const EntrySchema = SchemaFactory.createForClass(Entry);
 
-EntrySchema.index({ date: 1, type: 1 });
+EntrySchema.index({ user: 1, date: -1, type: 1 });
