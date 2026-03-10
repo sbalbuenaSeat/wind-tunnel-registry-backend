@@ -1,3 +1,4 @@
+# Node modules
 node_modules
 dist
 .env
@@ -12,3 +13,6 @@ README.md
 coverage
 test
 vitest.config.ts
+nest-cli.json
+tsconfig.build.json
+pnpm-lock.yaml
