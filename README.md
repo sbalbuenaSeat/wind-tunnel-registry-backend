@@ -1,98 +1,95 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Wind Tunnel Registry Backend 🪂
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A specialized backend to track and manage wind tunnel flight time, built with NestJS.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Features
 
-## Description
+- **Authentication:** Google OAuth2 integration and JWT-based session management (via cookies).
+- **Flight Entries:** Create, list, update, and delete flight time entries. Supports bulk import.
+- **Reports:** Generate summaries of flight time by type (Individual, Coaching, Shared, etc.).
+- **User Management:** Automatic user profile creation on first login.
+- **API Documentation:** Fully interactive Swagger UI.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🛠 Tech Stack
 
-## Project setup
+- **Framework:** [NestJS 11](https://nestjs.com/)
+- **Database:** [MongoDB](https://www.mongodb.com/) with Mongoose.
+- **Language:** TypeScript.
+- **Package Manager:** [pnpm](https://pnpm.io/).
+- **Testing:** [Vitest](https://vitest.dev/).
+- **Deployment:** [Koyeb](https://www.koyeb.com/) (using Docker).
+
+## 💻 Local Development
+
+### Prerequisites
+
+- Node.js (v20 or higher recommended)
+- pnpm (`npm install -g pnpm`)
+- MongoDB instance (local or Atlas)
+
+### Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd wind-tunnel-registry-backend
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   pnpm install
+   ```
+
+3. **Environment Variables:**
+   Create a `.env` file in the root directory with the following variables:
+   ```env
+   PORT=3000
+   MONGO_URI=mongodb://localhost:27017/wind-tunnel
+   JWT_SECRET=your_jwt_secret
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
+   ```
+
+4. **Run the application:**
+   ```bash
+   # Development mode
+   pnpm run start:dev
+
+   # Production mode
+   pnpm run build
+   pnpm run start:prod
+   ```
+
+## 🧪 Testing
 
 ```bash
-$ pnpm install
+# Run all tests
+pnpm run test
+
+# E2E tests
+pnpm run test:e2e
+
+# Test coverage
+pnpm run test:coverage
 ```
 
-## Compile and run the project
+## 🔐 Access and Authentication
 
-```bash
-# development
-$ pnpm run start
+In production, the API is protected. Follow these steps to access the documentation and endpoints:
 
-# watch mode
-$ pnpm run start:dev
+1.  **Login:** Navigate to `https://substantial-rosalynd-blue-code-1a304522.koyeb.app/auth/google`.
+2.  **Authenticate:** Log in with your Google account.
+3.  **Automatic Redirect:** Once authenticated, you will be automatically redirected to the **Swagger Documentation** (`/docs`).
+4.  **Session:** A secure `access_token` cookie will be set in your browser, allowing you to interact with the API.
 
-# production mode
-$ pnpm run start:prod
-```
+## 🚀 Deployment
 
-## Run tests
+The application is configured for **Continuous Deployment** on [Koyeb](https://www.koyeb.com/).
 
-```bash
-# unit tests
-$ pnpm run test
+- Every push to the `main` branch triggers an automatic build using the `Dockerfile`.
+- **Production URL:** [https://substantial-rosalynd-blue-code-1a304522.koyeb.app](https://substantial-rosalynd-blue-code-1a304522.koyeb.app)
 
-# e2e tests
-$ pnpm run test:e2e
+## 📄 License
 
-# test coverage
-$ pnpm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is [UNLICENSED](LICENSE).
