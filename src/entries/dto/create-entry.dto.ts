@@ -50,10 +50,6 @@ export class CreateEntryDto {
   @IsOptional()
   note?: string;
 
-  @ApiPropertyOptional({
-    description: 'User ID associated with the entry',
-    example: '60d5ecb8b39c0c001f8e4e1a',
-  })
   @IsMongoId()
   @IsOptional()
   user?: string;
