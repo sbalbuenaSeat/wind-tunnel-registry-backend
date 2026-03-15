@@ -6,6 +6,7 @@ import { UserDocument } from '../users/schemas/user.schema';
 import {
   ApiCookieAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -22,6 +23,13 @@ export class ReportsController {
   @Get('total')
   @ApiOperation({ summary: 'Get total flight time' })
   @ApiResponse({ status: 200, type: TotalFlightTimeDto })
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    type: String,
+    description: 'Filter by date in YYYY-MM-DD format',
+    example: '2026-03-15',
+  })
   getTotal(@Query('date') date: string | undefined, @Req() req: Request) {
     const user = req.user as UserDocument;
     return this.reportsService.totalFlightTime(user._id.toString(), date);
@@ -30,6 +38,13 @@ export class ReportsController {
   @Get('total-by-type')
   @ApiOperation({ summary: 'Get total flight time grouped by type' })
   @ApiResponse({ status: 200, type: TotalFlightTimeByTypeDto })
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    type: String,
+    description: 'Filter by date in YYYY-MM-DD format',
+    example: '2026-03-15',
+  })
   getReportByType(
     @Query('date') date: string | undefined,
     @Req() req: Request,

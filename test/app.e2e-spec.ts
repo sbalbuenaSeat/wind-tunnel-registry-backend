@@ -45,7 +45,7 @@ describe('AppController (e2e)', () => {
   it('/ (GET)', async () => {
     await request(app.getHttpServer())
       .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .expect(301)
+      .expect('Location', '/docs');
   });
 });
