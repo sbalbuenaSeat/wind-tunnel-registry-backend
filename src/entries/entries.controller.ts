@@ -20,11 +20,13 @@ import { UserDocument } from '../users/schemas/user.schema';
 import {
   ApiCookieAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { EntryResponseDto } from './dto/entry-response.dto';
 import { FindEntriesDto } from './dto/findEntries.dto';
+import { FlightType } from './schemas/entry.schema';
 
 @ApiTags('Entries')
 @ApiCookieAuth('access_token')
@@ -52,6 +54,18 @@ export class EntriesController {
   @Get()
   @ApiOperation({ summary: 'List all flight time entries for the user' })
   @ApiResponse({ status: 200, type: [EntryResponseDto] })
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    type: String,
+    example: '2026-03-15',
+  })
+  @ApiQuery({
+    name: 'type',
+    required: false,
+    enum: FlightType,
+    enumName: 'FlightType',
+  })
   list(@Query() query: FindEntriesDto, @Req() req: Request) {
     const user = req.user as UserDocument;
     return this.service.findAll(user._id.toString(), query.date, query.type);

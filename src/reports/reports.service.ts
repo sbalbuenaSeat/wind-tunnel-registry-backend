@@ -60,6 +60,6 @@ export class ReportsService {
       0,
     );
 
-    return { totalMinutes, byType: minutesByTypeResult };
+    return { totalMinutes, flightDetails: minutesByTypeResult };
   }
 }
