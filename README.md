@@ -76,7 +76,7 @@ pnpm run test:coverage
 
 ## 🔐 Access and Authentication
 
-In production, the API is protected. Follow these steps to access the documentation and endpoints:
+In production, the API is protected. Follow these steps to access the documentation and endpoints (for the moment only emails accepted):
 
 1.  **Login:** Navigate to `https://substantial-rosalynd-blue-code-1a304522.koyeb.app/auth/google`.
 2.  **Authenticate:** Log in with your Google account.
