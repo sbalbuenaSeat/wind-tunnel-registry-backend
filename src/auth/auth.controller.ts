@@ -50,18 +50,46 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    return res.redirect('/docs');
+    return res.redirect(process.env.FRONTEND_URL ?? '');
   }
 
   @Get('logout')
   @ApiOperation({ summary: 'Log out' })
   @ApiResponse({ status: 200, description: 'Cookie cleared.' })
   logout(@Res() res: Response) {
-    res.clearCookie('access_token');
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+    });
 
     return res.json({
       message: 'Logout successful',
     });
+  }
+
+  @Get('session')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('access_token')
+  @ApiOperation({
+    summary: 'Check session status',
+    description: 'Returns the authentication status of the current session.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns whether the user is authenticated.',
+    schema: {
+      type: 'object',
+      properties: {
+        authenticated: { type: 'boolean', example: true },
+        name: { type: 'string', example: 'John Doe' },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  session(@Req() req: Request) {
+    const user = req.user as UserDocument;
+    return { authenticated: true, name: user.displayName };
   }
 
   @Get('me')
