@@ -82,12 +82,14 @@ export class AuthController {
       type: 'object',
       properties: {
         authenticated: { type: 'boolean', example: true },
+        name: { type: 'string', example: 'John Doe' },
       },
     },
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  session() {
-    return { authenticated: true };
+  session(@Req() req: Request) {
+    const user = req.user as UserDocument;
+    return { authenticated: true, name: user.displayName };
   }
 
   @Get('me')
