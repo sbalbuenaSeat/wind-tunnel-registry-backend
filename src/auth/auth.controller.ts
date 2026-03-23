@@ -68,6 +68,28 @@ export class AuthController {
     });
   }
 
+  @Get('session')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('access_token')
+  @ApiOperation({
+    summary: 'Check session status',
+    description: 'Returns the authentication status of the current session.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns whether the user is authenticated.',
+    schema: {
+      type: 'object',
+      properties: {
+        authenticated: { type: 'boolean', example: true },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  session() {
+    return { authenticated: true };
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth('access_token')
