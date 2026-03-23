@@ -50,14 +50,18 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    return res.redirect('/docs');
+    return res.redirect(process.env.FRONTEND_URL ?? '');
   }
 
   @Get('logout')
   @ApiOperation({ summary: 'Log out' })
   @ApiResponse({ status: 200, description: 'Cookie cleared.' })
   logout(@Res() res: Response) {
-    res.clearCookie('access_token');
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+    });
 
     return res.json({
       message: 'Logout successful',
